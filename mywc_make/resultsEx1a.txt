@@ -1,0 +1,96 @@
+gcc -o mywc mywc.c
+ 5 12 83
+#!/bin/bash
+#Shows usage help if the command is used incorrectly
+usage(){ echo "Usage: $0 [-r <string>] [-f <string(s)>]" 1>&2; exit 1; }
+while getopts ":r:f:" opts; do
+  #Stores list of filenames as a variable
+  list="$OPTARG"
+  case "${opts}" in
+    r)
+      make
+      eval ${OPTARG}
+      ;;
+    f)
+      #Iterates through the filenames
+      for arg in $list
+        do
+          cat "$arg"
+          printf "\n\n\n" #Newlines for formatting
+      done
+      ;;
+    *)
+      #Prints usage help
+      usage
+      ;;
+    esac
+done
+
+
+
+/************************************************************
+ * filename: mywc.c
+ *
+ * A naive implementation of wc.c
+ *
+ * Version: 1.0
+ * Author: Mark Fisher, CMP, UEA
+ * Date: 03 Nov. 2016
+ *
+ ************************************************************/
+
+#include <stdio.h>
+
+int main()
+{
+  int ch;
+  int linecount = 0;
+  int wordcount = 0;
+  int charcount = 0;
+  int flag = 0;
+
+  //Repeat until End Of File character is reached
+  while ((ch = getchar()) != EOF) {
+    // Increment character count if NOT new line or space
+    if ((ch != ' ') && (ch != '\n')) {
+      charcount++;
+      flag = 0;
+    }
+    else {
+      if (flag==0) {
+        wordcount++;
+        flag = 1;
+      }
+      charcount++;
+    }
+
+    // Increment line count if new line character
+    if (ch == '\n') { linecount++; }
+
+  }
+
+  if (flag==0) wordcount++;
+
+  printf(" %d %d %d\n", linecount, wordcount, charcount);
+
+  getchar(); // consume EOF
+
+  return(0);
+}
+
+
+
+
+CC=gcc
+RM=rm -f
+
+default: all
+
+all:	mywc.c
+	$(CC) -o mywc mywc.c
+
+clean:
+	$(RM) mywc mywc.o
+
+
+
