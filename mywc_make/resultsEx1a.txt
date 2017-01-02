@@ -1,7 +1,6 @@
 gcc -o mywc mywc.c
  5 12 83
 
-
 #!/bin/bash
 #Shows usage help if the command is used incorrectly
 usage(){ echo "Usage: $0 [-r <string>] [-f <string(s)>]" 1>&2; exit 1; }
@@ -17,9 +16,9 @@ while getopts ":r:f:" opts; do
       #Iterates through the filenames
       for arg in $list
         do
-          printf "\n\n" #Newlines for formatting
+          printf "\n" #Newlines for formatting
           cat "$arg"
-          printf "\n\n"
+          printf "\n"
       done
       ;;
     *)
@@ -28,8 +27,6 @@ while getopts ":r:f:" opts; do
       ;;
     esac
 done
-
-
 
 
 /************************************************************
@@ -84,8 +81,6 @@ int main()
 
 
 
-
-
 CC=gcc
 RM=rm -f
 
@@ -96,5 +91,4 @@ all:	mywc.c
 
 clean:
 	$(RM) mywc mywc.o
-
 
