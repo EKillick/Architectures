@@ -13,8 +13,9 @@ while getopts ":r:f:" opts; do
       #Iterates through the filenames
       for arg in $list
         do
+          printf "\n\n" #Newlines for formatting
           cat "$arg"
-          printf "\n\n\n" #Newlines for formatting
+          printf "\n\n"
       done
       ;;
     *)
