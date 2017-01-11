@@ -5,7 +5,7 @@ CFLAGS=-D NDEBUG -O3
 default:	all
 
 all:		bigint.o bigintadd.o fib.o
-		$(CC) $(OPTS) -o fib bigint.o bigintadd.o fib.o
+		$(CC) $(CFLAGS) -o fib bigint.o bigintadd.o fib.o
 
 clean:		
-		$(RM) $(OPTS) bigint.o bigintadd.o fib.o
+		$(RM) bigint.o bigintadd.o fib.o
