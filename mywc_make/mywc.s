@@ -3,8 +3,8 @@
 
 .text
 
-.code 16
-.align 2
+.code 16			@using Thumb 16-bit
+.align 2			@2 byte aligned instructions
 
 thumb_function:
 	mov r2, #0		@int linecount = 0
