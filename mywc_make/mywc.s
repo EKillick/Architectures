@@ -19,25 +19,37 @@ main:
 loop:
 	bl getchar		@while ((ch = getchar()) != EOF)
 	mov r1, r0		@puts output of getchar in r1
-	cmn r1, #1		@cmn used to compare to -1
+	cmn r1, #1		@cmn used to compare to -1 (EOF)
 	beq return		@ends while loop
 
-	cmp r1, #32		@if ch = ' '
-	beq else_word
-	cmp r1, #10		@if ch = '\n'
-	beq else_word
+	cmp r1, #32		@if ch != ' '
+	cmpne r1, #10		@&& if ch != '\n'
+	beq if_char
 
-	add r6, #1		@wordcount++
-	mov r7, #1		@flag = 1
+	cmp r7, #0		@else
+	beq else_word		@if (flag == 0)
+
+	cmp r1, #10		@if (ch == '\n')
+	beq if_line
 
 	b loop
 
-else_word:
-	cmp r7, #0		@if flag = 0
+if_char:
 	add r6, #1		@charcount++
-	bne loop
+	mov r7, #1		@flag = 1
+	b loop
+
+else_word:
+	add r6, #1		@charcount++
+	cmp r7, #0		@check value of flag
+	bneq loop		@if flag != 0
 	add r5, #1		@wordcount++
 	mov r7, #1		@flag = 1
+	b loop
+
+if_line:
+	add r4, #1		@linecount++
+	b loop
 
 return:
 
