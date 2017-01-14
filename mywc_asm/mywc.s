@@ -7,10 +7,11 @@
 .global main
 .global getchar
 
-.code 32			@using Thumb 16-bit
-.align 4			@2 byte aligned instructions
+.code 32			@32 for Arm, 16 for Thumb
+.align 4			@4 bytes for Arm, 2 for Thumb
 
 main:
+	push {lr}
 	mov r4, #0		@int linecount = 0
 	mov r5, #0		@int wordcount = 0
 	mov r6, #0		@int charcount = 0
@@ -68,6 +69,7 @@ return:
 
 	bl getchar		@consume EOF
 
+	pop {lr}
 	bx lr
 
 add_word:
