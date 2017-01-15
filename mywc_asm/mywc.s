@@ -2,7 +2,6 @@
 @ an assembly translation of mywc.c
 
 
-@ Code Section
 .text
 .global main
 .global getchar
@@ -20,24 +19,28 @@ main:
 loop:
 	bl getchar		@while ((ch = getchar()) != EOF)
 	mov r1, r0		@puts output of getchar in r1
-	cmn r1, #1		@cmn used to compare to -1 (EOF)
+        mov r2, #0
+	sub r2, r2, #1
+	cmp r1, r2		@cmn used to compare to -1 (EOF)
 	beq return		@ends while loop
 
-	cmp r1, #32		@if ch != ' '
-	cmpne r1, #10		@&& if ch != '\n'
-	beq if_char
+	cmp r1, #' '		@if ch == ' '
+	beq else_word
+	cmp r1, #'\n'		@if ch == '\n'
+	beq else_word
+
+	add r6, #1		@charcount++
+	mov r7, #0		@flag = 0
+
+	b if_line
 
 	cmp r7, #0		@else
 	beq else_word		@if (flag == 0)
 
-	cmp r1, #10		@if (ch == '\n')
-	beq if_line
+if_line:
+	cmp r1, #'\n'		@if (ch == '\n')
+	beq line_inc
 
-	b loop
-
-if_char:
-	add r6, #1		@charcount++
-	mov r7, #1		@flag = 1
 	b loop
 
 else_word:
@@ -46,9 +49,10 @@ else_word:
 	bne loop		@if flag != 0
 	add r5, #1		@wordcount++
 	mov r7, #1		@flag = 1
-	b loop
 
-if_line:
+	b if_line
+
+line_inc:
 	add r4, #1		@linecount++
 	b loop
 
@@ -58,14 +62,9 @@ return:
 
 	ldr r0, =string
 	mov r1, r4		@move linecount to r1
+	mov r2, r5		@move wordcount to r1
+	mov r3, r6		@move charcount to r1
 	bl printf
-
-	ldr r0, =string
-	mov r1, r5		@move wordcount to r1
-	bl printf
-
-	ldr r0, =string
-	mov r1, r6		@move charcount to r1
 
 	bl getchar		@consume EOF
 
@@ -77,6 +76,5 @@ add_word:
 	mov r7, #1		@flag = 1
 	b return
 
-.data
 string:
-	.asciz "%d "
+	.asciz "%d, %d, %d\n"
