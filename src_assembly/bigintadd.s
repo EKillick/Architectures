@@ -3,6 +3,15 @@
 .text
 .balign 4
 
+uiCarry:
+	.word 0
+uiSum:
+	.word 0
+i:
+	.word 0
+iSumLength:
+	.word 0
+
 BigInt_larger:
 mov r3, #0			@int iLarger
 cmp r1, r0			@r0 = iLength1, r1 = iLength2
@@ -12,7 +21,6 @@ b BigInt_larger_return
 
 BigInt_larger_else:		@else
 mov r3, r1			@iLarger = iLength2
-b BigInt_larger_return
 
 BigInt_larger_return:
 mov r0, r3			@moves iLarger to r0
