@@ -6,10 +6,10 @@
 .global main
 .global getchar
 
-.code 32			@32 for Arm, 16 for Thumb
-.align 4			@4 bytes for Arm, 2 for Thumb
+.code 16			@32 for Arm, 16 for Thumb
+.align 2			@4 bytes for Arm, 2 for Thumb
 
-main:
+thumb_func:
 	push {lr}
 	mov r4, #0		@int linecount = 0
 	mov r5, #0		@int wordcount = 0
@@ -17,7 +17,7 @@ main:
 	mov r7, #0		@int flag = 0
 
 loop:
-	bl getchar		@while ((ch = getchar()) != EOF)
+	blx getchar		@while ((ch = getchar()) != EOF)
 	mov r1, r0		@puts output of getchar in r1
         mov r2, #0
 	sub r2, r2, #1
@@ -64,11 +64,11 @@ return:
 	mov r1, r4		@move linecount to r1
 	mov r2, r5		@move wordcount to r1
 	mov r3, r6		@move charcount to r1
-	bl printf
+	blx printf
 
-	bl getchar		@consume EOF
+	blx getchar		@consume EOF
 
-	pop {lr}
+	pop {pc}
 	bx lr
 
 add_word:
@@ -78,3 +78,12 @@ add_word:
 
 string:
 	.asciz "%d, %d, %d\n"
+
+.code 32
+.align 4
+
+main:
+	push {lr}
+	blx thumb_func
+	pop {lr}
+	bx lr
