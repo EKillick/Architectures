@@ -1,0 +1,105 @@
+gcc -o mywc mywc.s
+5, 12, 83
+
+@ mywc.s
+@ an assembly translation of mywc.c
+
+
+.text
+.global main
+.global getchar
+
+.code 16			@32 for Arm, 16 for Thumb
+.align 2			@4 bytes for Arm, 2 for Thumb
+
+thumb_func:
+	push {lr}
+	mov r4, #0		@int linecount = 0
+	mov r5, #0		@int wordcount = 0
+	mov r6, #0		@int charcount = 0
+	mov r7, #0		@int flag = 0
+
+loop:
+	blx getchar		@while ((ch = getchar()) != EOF)
+	mov r1, r0		@puts output of getchar in r1
+        mov r2, #0
+	sub r2, r2, #1
+	cmp r1, r2		@cmn used to compare to -1 (EOF)
+	beq return		@ends while loop
+
+	cmp r1, #' '		@if ch == ' '
+	beq else_word
+	cmp r1, #'\n'		@if ch == '\n'
+	beq else_word
+
+	add r6, #1		@charcount++
+	mov r7, #0		@flag = 0
+
+	b if_line
+
+	cmp r7, #0		@else
+	beq else_word		@if (flag == 0)
+
+if_line:
+	cmp r1, #'\n'		@if (ch == '\n')
+	beq line_inc
+
+	b loop
+
+else_word:
+	add r6, #1		@charcount++
+	cmp r7, #0		@check value of flag
+	bne loop		@if flag != 0
+	add r5, #1		@wordcount++
+	mov r7, #1		@flag = 1
+
+	b if_line
+
+line_inc:
+	add r4, #1		@linecount++
+	b loop
+
+return:
+	cmp r7, #0
+	beq add_word		@if (flag == 0)
+
+	ldr r0, =string
+	mov r1, r4		@move linecount to r1
+	mov r2, r5		@move wordcount to r1
+	mov r3, r6		@move charcount to r1
+	blx printf
+
+	blx getchar		@consume EOF
+
+	pop {pc}
+	bx lr
+
+add_word:
+	add r5, #1		@wordcount++
+	mov r7, #1		@flag = 1
+	b return
+
+string:
+	.asciz "%d, %d, %d\n"
+
+.code 32
+.align 4
+
+main:
+	push {lr}
+	blx thumb_func
+	pop {lr}
+	bx lr
+
+
+CC=gcc
+RM=rm -f
+
+default: all
+
+all:	mywc.s
+	$(CC) -o mywc mywc.s
+
+clean:
+	$(RM) mywc mywc.o
+
